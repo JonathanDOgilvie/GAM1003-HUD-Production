@@ -7,24 +7,27 @@ using UnityEngine;
 
 public class mouseLookControl : MonoBehaviour
 {
-    Vector2 rotation = new Vector2(0, 0);
-    public float speed = 3;
-    
+    public float mSensitivity = 100f;
+    public Transform player;
+    float xRotation = 0f;
 
 
-    // Start is called before the first frame update
     void Start()
     {
-        
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
 
-    // Update is called once per frame
     void Update()
     {
-
-        
-        rotation.y += Input.GetAxis("Mouse X");
-        rotation.x += Input.GetAxis("Mouse Y");
-        transform.eulerAngles = (Vector2)rotation * speed;
+        float mouseX = Input.GetAxis("Mouse X") * mSensitivity * Time.deltaTime;
+        float mouseY = Input.GetAxis("Mouse Y") * mSensitivity * Time.deltaTime;
+        xRotation -= mouseY;
+        xRotation = Mathf.Clamp(xRotation, -90f, 90f);
+        //This ensures that we can never fully look behind the player
+        transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+        //Quaternion is responsible for rotation
+        player.Rotate(Vector3.up * mouseX);
     }
-}//End of script
+
+}//End of Script

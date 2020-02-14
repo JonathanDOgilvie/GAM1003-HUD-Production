@@ -6,52 +6,37 @@ using UnityEngine;
 
 public class playerControl : MonoBehaviour
 {
-    public float speed = 10.0f;
-    public float jumpForce = 5f;
-    public Rigidbody player;
-    private bool grounded;
-    public Transform target;
 
+    public CharacterController controller;
+    public float speed = 12f;
+    Vector3 velocity;
+    public float gravity = -9.81f;
+    public Transform groundCheck;
+    public float groundDistance = 0.4f;
+    public LayerMask groundMask;
+    bool isGrounded;
+    public float jumpHeight = 3f;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
-        grounded = true;
-    }
-
-    // Update is called once per frame
     void Update()
     {
-        transform.LookAt(target);
 
-        float translation = Input.GetAxis("Vertical") * speed;
-        float straffe = Input.GetAxis("Horizontal") * speed;
-        translation *= Time.deltaTime;
-        straffe *= Time.deltaTime;
+        isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
 
-        transform.Translate(straffe, 0, translation);
-
-        if (Input.GetKeyDown("escape"))
+        if (isGrounded && velocity.y < 0)
         {
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
+            velocity.y = -2f;
+        }
+        float x = Input.GetAxis("Horizontal");
+        float z = Input.GetAxis("Vertical");
+
+        Vector3 move = transform.right * x + transform.forward * z;
+        controller.Move(move * speed * Time.deltaTime);
+        if (Input.GetButtonDown("Jump") && isGrounded)
+        {
+            velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
         }
 
-        if (Input.GetButton("Jump") && grounded == true)
-        {
-            player.velocity = new Vector3(0f, jumpForce, 0f);
-        }
-
-        if (Input.GetKeyDown(KeyCode.LeftShift))
-        {
-            speed = speed * 2;
-        }
-
-        if (Input.GetKeyUp(KeyCode.LeftShift))
-        {
-            speed = speed / 2;
-        }
+        velocity.y += gravity * Time.deltaTime;
+        controller.Move(velocity * Time.deltaTime);
     }
 }//End of script
