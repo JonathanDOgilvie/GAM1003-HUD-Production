@@ -10,6 +10,7 @@ public class playerControl : MonoBehaviour
     public float jumpForce = 5f;
     public Rigidbody player;
     private bool grounded;
+    public Transform target;
 
 
     // Start is called before the first frame update
@@ -23,6 +24,8 @@ public class playerControl : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        transform.LookAt(target);
+
         float translation = Input.GetAxis("Vertical") * speed;
         float straffe = Input.GetAxis("Horizontal") * speed;
         translation *= Time.deltaTime;
